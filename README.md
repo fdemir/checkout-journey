@@ -1,6 +1,6 @@
 # Checkout Journey
 
-This project aims to simulate a checkout system for a shop. It uses event-driven architecture to simulate the checkout process. Event sourcing is used to store the state of the checkout system.
+This project aims to simulate a checkout system. It uses event-driven architecture to simulate the checkout process. Event sourcing is used to store the state of the checkout system.
 
 It consist of these technologies:
 

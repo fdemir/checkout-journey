@@ -1,16 +1,25 @@
 package main
 
 import (
+	"bytes"
+	"encoding/json"
+	"fmt"
 	"os"
 
 	"github.com/confluentinc/confluent-kafka-go/v2/kafka"
 )
 
+type Checkout struct {
+	Address string `json:"address"`
+	Email   string `json:"email"`
+}
+
 func main() {
 	c, err := kafka.NewConsumer(&kafka.ConfigMap{
 		"bootstrap.servers": os.Getenv("KAFKA_BROKER"),
-		"group.id":          "inventory",
+		"group.id":          "notification",
 		"auto.offset.reset": "earliest",
+		"fetch.min.bytes":   1,
 	})
 
 	if err != nil {
@@ -30,7 +39,14 @@ func main() {
 	for {
 		msg, err := c.ReadMessage(-1)
 		if err == nil {
-			println("Received from topic: " + topic + " message: " + string(msg.Value))
+
+			var checkout Checkout
+
+			dec := json.NewDecoder(bytes.NewReader(msg.Value))
+			dec.Decode(&checkout)
+
+			// TODO: implement email notification
+			fmt.Println("Notification should send to ", checkout.Email)
 		} else {
 			println("Error: " + err.Error())
 		}

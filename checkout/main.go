@@ -8,6 +8,10 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
+const (
+	topic = "checkout"
+)
+
 type Product struct {
 	ID    int     `json:"id"`
 	Name  string  `json:"name"`
@@ -15,6 +19,8 @@ type Product struct {
 }
 
 type Checkout struct {
+	Address  string    `json:"address"`
+	Email    string    `json:"email" validate:"required,email"`
 	Products []Product `json:"products"`
 }
 
@@ -23,7 +29,9 @@ func main() {
 
 	p, err := kafka.NewProducer(&kafka.ConfigMap{
 		"bootstrap.servers": os.Getenv("KAFKA_BROKER"),
+		"linger.ms":         0,
 	})
+
 	if err != nil {
 		panic(err)
 	}
@@ -44,16 +52,12 @@ func main() {
 			return err
 		}
 
-		topic := "checkout"
+		targetTopic := topic
 
-		// create topic if not exists
-
-		for _, product := range checkout.Products {
-			p.Produce(&kafka.Message{
-				TopicPartition: kafka.TopicPartition{Topic: &topic, Partition: kafka.PartitionAny},
-				Value:          []byte(product.Name),
-			}, nil)
-		}
+		p.Produce(&kafka.Message{
+			TopicPartition: kafka.TopicPartition{Topic: &targetTopic, Partition: kafka.PartitionAny},
+			Value:          []byte(c.Body()),
+		}, nil)
 
 		return c.JSON(checkout)
 	})

@@ -1,7 +1,7 @@
 # Checkout Journey
 
-This project aims to simulate a checkout system. It uses event-driven architecture to simulate the checkout process. Event sourcing is used to store the state of the checkout system.
-
+This project aims to simulate a checkout system. It uses event-driven architecture to simulate the checkout process. Event sourcing is used to store the state of the checkout system. 
+ss
 It consist of these technologies:
 
 - Kafka
@@ -10,25 +10,16 @@ It consist of these technologies:
 - Docker
 - Next.js(Client)
 
-<!--
+## Diagram
 
-## How to run
+Whenever a checkout is created, a checkout event is published to the `checkout` topic. There are consumers that listen to this topic and do their work. 
 
-### Prerequisites
+![diagram](./diagram.png)
 
-- Docker
-- Docker Compose
+<!-- 
+  TODO:
+   - keep the products in the inventory service
+   - web client
+   - switch/case for only handle the checkout event
 
-### Steps
-
-1. Clone this repository
-2. Run `docker-compose up` in the root directory
-3. Open `localhost:8000` in your browser
-
-## Architecture
-
-![Architecture](./architecture.png)
-
-## Event Sourcing
-
-![Event Sourcing](./event-sourcing.png) -->
+ -->

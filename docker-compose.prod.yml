@@ -20,8 +20,28 @@ services:
       dockerfile: Dockerfile
       context: inventory
     depends_on:
-      - broker
-      - zoo
+     - checkout
+    environment:
+      KAFKA_BROKER: "broker:9092"
+
+
+  shipment:
+    container_name: shipment
+    build:
+      dockerfile: Dockerfile
+      context: shipment
+    depends_on:
+     - checkout
+    environment:
+      KAFKA_BROKER: "broker:9092"
+
+  notification:
+    container_name: notification
+    build:
+      dockerfile: Dockerfile
+      context: notification
+    depends_on:
+     - checkout
     environment:
       KAFKA_BROKER: "broker:9092"
 
@@ -56,39 +76,3 @@ services:
       KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
     depends_on:
       - zoo
-
-  init-kafka:
-    image: confluentinc/cp-kafka:7.3.2
-    depends_on:
-      - broker
-    entrypoint: ["/bin/sh", "-c"]
-    command: |
-      "
-        kafka-topics --bootstrap-server broker:9092 --list
-        kafka-topics --bootstrap-server broker:9092 --create --if-not-exists --topic checkout --replication-factor 1 --partitions 1
-        kafka-topics --bootstrap-server broker:9092 --list
-      "
-
-  # inventory:
-  #   container_name: inventory
-  #   build:
-  #     dockerfile: Dockerfile
-  #     context: inventory
-  #   ports:
-  #     - "3001:3001"
-
-  # shipment:
-  #   container_name: shipment
-  #   build:
-  #     dockerfile: Dockerfile
-  #     context: shipment
-  #   ports:
-  #     - "3002:3002"
-
-  # order:
-  #   container_name: order
-  #   build:
-  #     dockerfile: Dockerfile
-  #     context: order
-  #   ports:
-  #     - "3003:3003"

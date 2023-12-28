@@ -59,7 +59,9 @@ func main() {
 			Value:          []byte(c.Body()),
 		}, nil)
 
-		return c.JSON(checkout)
+		return c.JSON(fiber.Map{
+			"message": "ok",
+		})
 	})
 
 	log.Fatal(app.Listen(":3000"))

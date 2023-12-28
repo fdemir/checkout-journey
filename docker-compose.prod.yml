@@ -1,16 +1,32 @@
 version: "2.1"
 
 services:
+
+  traefik:
+    image: traefik:v2.10
+    command:
+      - "--api.insecure=true"
+      - "--providers.docker"
+      - "--entrypoints.web.address=:80"
+    ports:
+      - "80:80"
+      - "8080:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+
   checkout:
     container_name: checkout
     build:
       dockerfile: Dockerfile
       context: checkout
-    ports:
-      - "3000:3000"
     depends_on:
       - broker
       - zoo
+      - traefik
+    labels:
+      - "traefik.http.routers.checkout.rule=Host(`localhost`) && PathPrefix(`/api/checkout`)"
+      - "traefik.http.middlewares.checkout-stripprefix.stripprefix.prefixes=/api/checkout"
+      - "traefik.http.routers.checkout.middlewares=checkout-stripprefix"
     environment:
       KAFKA_BROKER: "broker:9092"
 
@@ -20,10 +36,21 @@ services:
       dockerfile: Dockerfile
       context: inventory
     depends_on:
-     - checkout
+     - traefik
     environment:
       KAFKA_BROKER: "broker:9092"
 
+  merchant:
+    container_name: merchant
+    build:
+      dockerfile: Dockerfile
+      context: merchant
+    depends_on:
+     - traefik
+    labels:
+      - "traefik.http.routers.merchant.rule=Host(`localhost`) && PathPrefix(`/api/merchant`)"
+      - "traefik.http.middlewares.merchant-stripprefix.stripprefix.prefixes=/api/merchant"
+      - "traefik.http.routers.merchant.middlewares=merchant-stripprefix"
 
   shipment:
     container_name: shipment
@@ -31,7 +58,7 @@ services:
       dockerfile: Dockerfile
       context: shipment
     depends_on:
-     - checkout
+     - traefik
     environment:
       KAFKA_BROKER: "broker:9092"
 
@@ -41,7 +68,7 @@ services:
       dockerfile: Dockerfile
       context: notification
     depends_on:
-     - checkout
+     - traefik
     environment:
       KAFKA_BROKER: "broker:9092"
 

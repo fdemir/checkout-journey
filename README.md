@@ -6,7 +6,6 @@ It consist of these technologies:
 
 - Kafka
 - Go + Fiber
-- MongoDB
 - Docker
 - Next.js(Client)
 
@@ -15,11 +14,3 @@ It consist of these technologies:
 Whenever a checkout is created, a checkout event is published to the `checkout` topic. There are consumers that listen to this topic and do their work. 
 
 ![diagram](./diagram.png)
-
-<!-- 
-  TODO:
-   - keep the products in the inventory service
-   - web client
-   - switch/case for only handle the checkout event
-
- -->

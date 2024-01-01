@@ -30,7 +30,8 @@ func main() {
 	for {
 		msg, err := c.ReadMessage(-1)
 		if err == nil {
-			println("Received from topic: " + topic + " message: " + string(msg.Value))
+			println("Items sold:")
+			println(string(msg.Value))
 		} else {
 			println("Error: " + err.Error())
 		}

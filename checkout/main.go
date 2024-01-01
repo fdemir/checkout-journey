@@ -6,6 +6,7 @@ import (
 
 	"github.com/confluentinc/confluent-kafka-go/v2/kafka"
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cors"
 )
 
 const (
@@ -27,6 +28,13 @@ type Checkout struct {
 func main() {
 	app := fiber.New()
 
+	app.Use(cors.New(
+		cors.Config{
+			AllowOrigins: "*",
+			AllowMethods: "POST,GET",
+		},
+	))
+
 	p, err := kafka.NewProducer(&kafka.ConfigMap{
 		"bootstrap.servers": os.Getenv("KAFKA_BROKER"),
 		"linger.ms":         0,
@@ -45,7 +53,7 @@ func main() {
 		})
 	})
 
-	app.Post("/checkout", func(c *fiber.Ctx) error {
+	app.Post("/purchase", func(c *fiber.Ctx) error {
 		var checkout Checkout
 
 		if err := c.BodyParser(&checkout); err != nil {

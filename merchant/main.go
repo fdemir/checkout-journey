@@ -4,10 +4,17 @@ import (
 	"log"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cors"
 )
 
 func main() {
 	app := fiber.New()
+
+	app.Use(cors.New(
+		cors.Config{
+			AllowOrigins: "*",
+		},
+	))
 
 	app.Get("/", func(c *fiber.Ctx) error {
 		return c.JSON(fiber.Map{
@@ -17,6 +24,8 @@ func main() {
 
 	app.Get("/products", func(c *fiber.Ctx) error {
 		return c.JSON(fiber.Map{
+
+			// should go to inventory
 			"products": []map[string]interface{}{
 				{"id": 1001001, "name": "AromaBrew", "price": 15.99},
 				{"id": 1001002, "name": "BeanEssence", "price": 18.50},
